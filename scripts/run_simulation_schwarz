@@ -1,7 +1,8 @@
 using Pkg
 
 # Activate the project environment
-Pkg.activate(joinpath(@__DIR__, "..")) 
+projectdir(args...) = joinpath(@__DIR__, "..", args...)
+Pkg.activate(projectdir()) 
 
 using BasicBlackHoleSim
 using Plots
@@ -35,10 +36,10 @@ p = plot_orbit(sol, title="Schwarzschild Geodesic")
 display(p)
 
 # save
-output_path = joinpath(@__DIR__, "orbit_result.png")
+output_path = projectdir("scripts", "schwarzchild_orbit_result.png")
 savefig(p, output_path)
 println("Plot saved to: $output_path")
 
 # --- ANIMATION ---
 println("3. Generating Animation...")
-animate_orbit(sol, joinpath(@__DIR__, "orbit.gif"))
+animate_orbit(sol, projectdir("scripts", "schwarzchild_orbit.gif"))
