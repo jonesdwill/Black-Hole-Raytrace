@@ -9,7 +9,7 @@ using BasicBlackHoleSim.Utils: get_black_hole_parameters, get_initial_photon_sta
 using Printf
 
 # ==========================================
-# 1. SETUP
+#                   SETUP
 # ==========================================
 M = 1.0
 a_star = 0.99 
@@ -30,11 +30,11 @@ x_view = (-12, 12)
 y_view = (-6, 6)
 
 # ==========================================
-# 2. PRE-COMPUTE PATHS
+#               PRE-COMPUTE PATHS
 # ==========================================
 println("1/3: Calculating high-precision geodesics...")
 
-path_resolution = 1000 # Higher res for smooth curves near horizon
+path_resolution = 10000
 ref_time = range(0.0, max_life, length=path_resolution)
 
 struct Streamline
@@ -159,10 +159,8 @@ anim = @animate for t_global in range(0, anim_duration, step=0.25) # Slower step
     end
 end
 
-# ==========================================
-# 4. SAVE
-# ==========================================
+
 println("3/3: Saving GIF...")
-output = projectdir("scripts", "kerr_zoomed_flow.gif")
+output = projectdir("scripts/photon-raytrace", "kerr_zoomed_flow.gif")
 gif(anim, output, fps = 24)
 println("Saved: $output")
