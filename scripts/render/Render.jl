@@ -61,7 +61,7 @@ const CFG = Config(
     1.0,    # Mass (M)
     0.99,   # Spin (a*). High for max affect.
     12.0,   # FOV (degrees)
-    10,      # Duration 
+    8,      # Duration 
     60,     # FPS
     joinpath(OUTPUT_DIR, "black_hole_data_1080p.jld2"),
     joinpath(OUTPUT_DIR, "black_hole_1080p.gif") 
@@ -204,7 +204,7 @@ end
 
 function render_animation(cfg::Config)
 
-    println("\n=== STEP 2: RENDERING ANIMATION (Doppler Band Fix Applied) ===")
+    println("\n=== STEP 2: RENDERING ANIMATION ===")
     
     # Check precomputed data exists
     if !isfile(cfg.data_path)
@@ -397,7 +397,7 @@ end
 #            Do either just physics, just rendering, or both.
 # ==============================================================================
 
-RUN_PHYSICS = true
+RUN_PHYSICS = false
 RUN_RENDER  = true   
 
 if RUN_PHYSICS
