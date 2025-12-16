@@ -298,31 +298,31 @@ function render_animation(cfg::Config)
                 norm_noise = (combined_noise + 1.0) / 2.0
                 turbulence = 0.4 + 0.6 * norm_noise^5.0
 
-                # Add spiral pattern to turbulence that will flow around the disc
-                spiral_phase = phi_unwrapped * 4.0 + r_hit * 0.15 
-                spiral = 1.0 + 0.3 * sin(spiral_phase)
-                turbulence *= spiral
+                # # Add spiral pattern to turbulence that will flow around the disc
+                # spiral_phase = phi_unwrapped * 4.0 + r_hit * 0.15 
+                # spiral = 1.0 + 0.3 * sin(spiral_phase)
+                # turbulence *= spiral
 
                 # ---------- COLOURING ----------
                 g_norm = clamp((g - 0.3) / (1.8 - 0.3), 0.0, 1.0)
 
                 if g_norm < 0.25
 
-                    # Cool outer regions: deep red
+                    # Cool outer regions: deep orange
                     t = g_norm / 0.25
-                    base = RGB(0.5f0 + 0.3f0*t, 0.1f0 + 0.1f0*t, 0.05f0)
+                    base = RGB(0.6f0 + 0.3f0*t, 0.2f0 + 0.2f0*t, 0.05f0)
 
                 elseif g_norm < 0.6
 
-                    # Mid regions: bright red
+                    # Mid regions: bright orange-yellow
                     t = (g_norm - 0.25) / 0.35
-                    base = RGB(0.8f0 + 0.2f0*t, 0.2f0 + 0.2f0*t, 0.05f0 + 0.05f0*t)
+                    base = RGB(0.9f0 + 0.1f0*t, 0.4f0 + 0.4f0*t, 0.05f0 + 0.15f0*t)
 
                 else
 
-                    # Hot inner: hot red-white
+                    # Hot inner: bright yellow-white (FIXED to be continuous)
                     t = (g_norm - 0.6) / 0.4
-                    base = RGB(1.0f0, 0.5f0, 0.1f0 + 0.1f0*t)
+                    base = RGB(1.0f0, 0.8f0, 0.2f0 + 0.1f0*t)
 
                 end
                 # --------------------------------
@@ -344,7 +344,7 @@ function render_animation(cfg::Config)
 
                 # Combine inner and outer fades
                 opacity = inner_fade * outer_fade
-                opacity_final = opacity * turbulence
+                opacity_final = opacity  * turbulence
 
                 # final color of pixel 
                 hdr_color = base * intensity * opacity_final * 1.5 # Increased final brightness
@@ -371,12 +371,18 @@ function render_animation(cfg::Config)
             )
         end
         
+        # Apply hue shift to make gold colors red
+        hue_shifted = map(tone_mapped) do c
+            hsv = HSV(c)
+            RGB(HSV(mod(hsv.h - 15, 360), hsv.s, hsv.v))
+        end
+
         # Clamp colour as to not blow out and convert to 8-bit channel 
         final_8bit_frame = map(c -> RGB{N0f8}(
             clamp(red(c), 0, 1),
             clamp(green(c), 0, 1),
             clamp(blue(c), 0, 1)
-        ), tone_mapped)
+        ), hue_shifted)
 
         render_collection[f] = final_8bit_frame
         next!(p) # updayte progress bar
