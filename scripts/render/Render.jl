@@ -308,21 +308,21 @@ function render_animation(cfg::Config)
 
                 if g_norm < 0.25
 
-                    # Cool outer regions: deep orange
+                    # Cool outer regions: deep red
                     t = g_norm / 0.25
-                    base = RGB(0.6f0 + 0.3f0*t, 0.2f0 + 0.2f0*t, 0.05f0)
+                    base = RGB(0.5f0 + 0.3f0*t, 0.1f0 + 0.1f0*t, 0.05f0)
 
                 elseif g_norm < 0.6
 
-                    # Mid regions: bright orange-yellow
+                    # Mid regions: bright red
                     t = (g_norm - 0.25) / 0.35
-                    base = RGB(0.9f0 + 0.1f0*t, 0.4f0 + 0.4f0*t, 0.05f0 + 0.15f0*t)
+                    base = RGB(0.8f0 + 0.2f0*t, 0.2f0 + 0.2f0*t, 0.05f0 + 0.05f0*t)
 
                 else
 
-                    # Hot inner: bright yellow-white (FIXED to be continuous)
+                    # Hot inner: hot red-white
                     t = (g_norm - 0.6) / 0.4
-                    base = RGB(1.0f0, 0.8f0, 0.2f0 + 0.1f0*t)
+                    base = RGB(1.0f0, 0.5f0, 0.1f0 + 0.1f0*t)
 
                 end
                 # --------------------------------

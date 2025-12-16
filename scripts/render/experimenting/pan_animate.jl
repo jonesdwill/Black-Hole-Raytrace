@@ -265,13 +265,13 @@ function render_pan_animation(cfg::Config)
                 g_norm = clamp((g - 0.3) / (1.8 - 0.3), 0.0, 1.0)
                 if g_norm < 0.25
                     t = g_norm / 0.25
-                    base = RGB(0.6f0 + 0.3f0*t, 0.2f0 + 0.2f0*t, 0.05f0)
+                    base = RGB(0.5f0 + 0.3f0*t, 0.1f0 + 0.1f0*t, 0.05f0)
                 elseif g_norm < 0.6
                     t = (g_norm - 0.25) / 0.35
-                    base = RGB(0.9f0 + 0.1f0*t, 0.4f0 + 0.4f0*t, 0.05f0 + 0.15f0*t)
+                    base = RGB(0.8f0 + 0.2f0*t, 0.2f0 + 0.2f0*t, 0.05f0 + 0.05f0*t)
                 else
                     t = (g_norm - 0.6) / 0.4
-                    base = RGB(1.0f0, 0.8f0, 0.2f0 + 0.1f0*t)
+                    base = RGB(1.0f0, 0.5f0, 0.1f0 + 0.1f0*t)
                 end
                 
                 # --- INTENSITY & OPACITY (with smooth doppler fix) ---
