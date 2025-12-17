@@ -23,7 +23,7 @@ To render, split the process in two parts to make any debugging a bit easier:
        
        2. **Render:** plot the observed accretion disc using computed redshifts, add some noise channels, and animate it on the disc.
 
-![Accretion Disk Animation](scripts/render/black_hole_1080p.gif)
+![Accretion Disk Animation](scripts/render/black_hole_lowa_1080p.gif)
 
 ## Project Structure
 
