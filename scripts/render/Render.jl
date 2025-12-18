@@ -316,50 +316,44 @@ function render_animation(cfg::Config)
                 # turbulence *= spiral
 
                 # ---------- COLOURING ----------
-                g_norm = clamp((g - 0.3) / (1.8 - 0.3), 0.0, 1.0)
+                g_norm = clamp((g - 0.3f0) / (1.8f0 - 0.3f0), 0.0f0, 1.0f0)
 
-                if g_norm < 0.25
+                # Increased exponent from 0.5 to 0.8 to make the reds deeper/darker
+                r = g_norm^0.8f0               
 
-                    # Cool outer regions: deep orange
-                    t = g_norm / 0.25
-                    base = RGB(0.6f0 + 0.3f0*t, 0.2f0 + 0.2f0*t, 0.05f0)
+                # Increased multiplier slightly so it reaches full yellow/orange faster
+                g_val = max(0.0f0, g_norm - 0.3f0)^2.0f0 * 2.5f0  
 
-                elseif g_norm < 0.6
+                # Lowered the start threshold (0.7 -> 0.55) and lowered exponent (3.0 -> 2.0)
+                # This introduces blue earlier to mix into white
+                b = max(0.0f0, g_norm - 0.45f0)^2.5f0 * 5.0f0     
 
-                    # Mid regions: bright orange-yellow
-                    t = (g_norm - 0.25) / 0.35
-                    base = RGB(0.9f0 + 0.1f0*t, 0.4f0 + 0.4f0*t, 0.05f0 + 0.15f0*t)
-
-                else
-
-                    # Hot inner: bright yellow-white (FIXED to be continuous)
-                    t = (g_norm - 0.6) / 0.4
-                    base = RGB(1.0f0, 0.8f0, 0.2f0 + 0.1f0*t)
-
-                end
-                # --------------------------------
+                # Clamp results to ensure valid RGB
+                base = RGB(clamp(r, 0f0, 1f0), clamp(g_val, 0f0, 1f0), clamp(b, 0f0, 1f0))
+                # -------------------------------
 
                 # ---------- INTENSITY & OPACITY ----------
-                # # Boost from Doppler beaming
+                # Boost from Doppler beaming 
                 g_clamped = clamp(g, 0.2, 2.5)  
-                doppler_boost = g_clamped^3.0
+                doppler_boost = g_clamped^4
 
-                # Moderate inner brightening
-                radial_falloff = 1.0 + 2.0 * (1.0 - r_norm)^2.0
-                intensity = doppler_boost * radial_falloff * 2
+                # Strong inner brightening
+                radial_falloff = 1.0 + 3.5 * (1.0 - r_norm)^2.0 
+                intensity = doppler_boost * radial_falloff * 2.5  
 
-                # Sharper inner edge by reducing the fade distance
+                # Sharper inner edge
                 inner_fade = clamp((r_hit - r_isco) / 0.4, 0.0, 1.0)^3.5
 
-                # Sharper outer fade by reducing the fade distance
-                outer_fade = clamp((r_outer - r_hit) / 1.8, 0.0, 1.0)^.5
+                # smooth outer fade - gradually fades to black
+                outer_fade_dist = 10.0  
+                outer_fade = clamp((r_outer - r_hit) / outer_fade_dist, 0.0, 1.0)^3  # Gentle power for smooth transition
 
-                # Combine inner and outer fades
+                # inner and outer fades
                 opacity = inner_fade * outer_fade
-                opacity_final = opacity  * turbulence
+                opacity_final = opacity * turbulence
 
-                # final color of pixel 
-                hdr_color = base * intensity * opacity_final * 1.5 # Increased final brightness
+                # fin color 
+                hdr_color = base * intensity * opacity_final * 1.5  
                 local_frame_hdr[i, j] = hdr_color
                 # -------------------------------------------
 
@@ -384,21 +378,15 @@ function render_animation(cfg::Config)
             )
         end
         
-        # Apply hue shift to make gold colors red
-        hue_shifted = map(tone_mapped) do c
-            hsv = HSV(c)
-            RGB(HSV(mod(hsv.h - 15, 360), hsv.s, hsv.v))
-        end
-
         # Clamp colour as to not blow out and convert to 8-bit channel 
         final_8bit_frame = map(c -> RGB{N0f8}(
             clamp(red(c), 0, 1),
             clamp(green(c), 0, 1),
             clamp(blue(c), 0, 1)
-        ), hue_shifted)
+        ), tone_mapped)
 
         render_collection[f] = final_8bit_frame
-        next!(p) # updayte progress bar
+        next!(p) # update progress bar
         # --------------- END FRAME RENDER --------------
     end
     
