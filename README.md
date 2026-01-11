@@ -1,4 +1,4 @@
-# BasicBlackHoleSim
+# Black Hole Raytracing
 
 A project with the goal of learning some Julia and basic GR theory. Simulates and renders black hole properties via raytracing photos.  
 
